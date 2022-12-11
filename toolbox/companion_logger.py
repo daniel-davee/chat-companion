@@ -1,4 +1,3 @@
-
 from pysimplelog import Logger
 
 logger = Logger('cli_companion')
