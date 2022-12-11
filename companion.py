@@ -2,7 +2,7 @@ from plac import call
 from os import environ
 from InquirerPy.inquirer import text
 import openai
-from typing import Optional
+from toolbox.companion_logger import logger
 
 def main(
         prompt: ('Your propmt','positional')='',
@@ -17,17 +17,18 @@ def main(
     if 'CHATKEY' not in environ: raise Exception('Set CHARKEY')
     openai.api_key = environ['CHATKEY']
 
+    logger.prompt((prompt:=prompt 
+                        or text('What do you want to ask?').execute()))
     completions = openai.Completion.create(
         engine=f"text-{engine}-{'002' if engine == 'davinci' else '001'}",
-        prompt=prompt or text('What do you want to ask?').execute(),
+        prompt=prompt,
         max_tokens=max_tokens,
         n=n,
         stop=None,
         temperature=temperature,
     )
-
-    generated_text = completions.choices[0].text
-    print(generated_text)
+    print((generated_text:=completions.choices[0].text))
+    logger.response(generated_text)
     
     
 if __name__ == '__main__':
