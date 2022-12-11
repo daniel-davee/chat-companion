@@ -1,18 +1,29 @@
-# chat_cli
+# CLI Companion
 
-I asked the chat bot what would be a good name for this cli chat bot and this what it responded with.
+CLI Companion is a command line tool that you can use to ask questions and get responses back from a virtual companion. You can also review previous questions and responses.
 
-Some cool names for a command line chat bot could be:
+## Installation
 
-- Terminal Talker
-- Commandline Conversationalist
-- Prompt Pal
-- Console Chatty Cathy
-- Bash Buddy
-- Shell Shapeshifter
-- Cli Chatbot
-- Commandline Companion
-- Terminal Talkbot
-- Prompt Pal 2.0
+You can install CLI Companion using [PyInstaller](https://www.pyinstaller.org/).
 
-I decide to go with cli_companion
+To install using PyInstaller, first clone this repository. Then, in the repository directory, run the following command:
+
+```
+pyinstaller -D companion.py
+```
+
+This will create a standalone executable in the `dist` directory.
+
+## Usage
+
+### Talk
+
+To ask a question, use the `talk` subcommand. For example:
+
+```
+companion talk "What is your name?"
+```
+
+### Review
+
+To review previous questions and responses, use the `review` subcommand. This will bring up a list of previous questions. You can then select a question to view the response.

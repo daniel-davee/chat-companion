@@ -17,6 +17,9 @@ class Companion(object):
             max_tokens:('max tokens used in response','option','max')=1024,
             n: ('The number of generated','option')=1,
             temperature: ('1 for more random','option','t') = 0.5,
+        '''
+        Allows you to talk chat gpt
+        '''
                                         ):
         if 'CHATKEY' not in environ: raise Exception('Set CHARKEY')
         openai.api_key = environ['CHATKEY']
@@ -38,6 +41,11 @@ class Companion(object):
             hst['history'] |= {prompt:generated_text}
    
     def review(self):
+        '''
+        To review previous questions and responses,
+        use the `review` subcommand. This will bring up a list of previous questions.
+        You can then select a question to view the response.
+        '''
         with shelve.open('.history') as hst:
             prompt = fuzzy('What prompt do you want to review', 
                             choices=list(hst['history'].keys()),
