@@ -6,6 +6,8 @@ from toolbox.companion_logger import logger
 import openai
 import shelve
 
+cwd = Path(__file__).parent
+
 class Companion(object):
     commands = 'talk', 'review'
     
@@ -41,7 +43,7 @@ class Companion(object):
         )
         print((generated_text:=completions.choices[0].text))
         logger.response(generated_text)
-        with shelve.open('.history') as hst:
+        with shelve.open(str(cwd/'.history')) as hst:
             hst['history'] |= {prompt:generated_text}
         
         if filename:(Path()/filename).write_text(generated_text)
@@ -56,7 +58,7 @@ class Companion(object):
         use the `review` subcommand. This will bring up a list of previous questions.
         You can then select a question to view the response.
         '''
-        with shelve.open('.history') as hst:
+        with shelve.open(str(cwd/'.history')) as hst:
             prompt = fuzzy('What prompt do you want to review', 
                             choices=list(hst['history'].keys()),
                             vi_mode=True,
