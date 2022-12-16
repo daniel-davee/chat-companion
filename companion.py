@@ -34,7 +34,7 @@ class Companion(object):
         '''
         Allows you to talk chat gpt
         '''
-        if 'CHATKEY' not in environ: raise Exception('Set CHARKEY')
+        if 'CHATKEY' not in environ: raise Exception('Set CHATKEY')
         openai.api_key = environ['CHATKEY']
 
         logger.prompt((prompt:=prompt 
