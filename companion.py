@@ -12,6 +12,11 @@ cwd = Path(__file__).parent
 
 cwd = cwd if cwd.name == 'chat_cli' else cwd.parent.parent
 
+contexts = cwd / ".contexts/contexts.dat"
+contexts.parent.mkdir(exist_ok=True)
+contexts = '.'.join(contexts.as_posix().split('.')[:-1])
+logs = cwd / "logs"
+logs.mkdir(exist_ok=True)
 class Companion(object):
     
     commands = [
@@ -109,7 +114,7 @@ class Companion(object):
                                     temperature=temperature,
                         )))
        
-        with shelve.open(str(cwd/'.contexts'), writeback=True) as hst:
+        with shelve.open(contexts, writeback=True) as hst:
             if profile not in hst: hst[profile] = {'history':{}}
             hst[profile]['history'] |= {prompt:{'response':response,'summary':summary}}
         
@@ -125,7 +130,7 @@ class Companion(object):
         use the `review` subcommand. This will bring up a list of previous questions.
         You can then select a question to view the response.
         '''
-        with shelve.open(str(cwd/'.contexts'), writeback=True) as hst:
+        with shelve.open(contexts, writeback=True) as hst:
             if profile not in hst: 
                 hst[profile] = {'history':{}}
                 return 'No history yet'
@@ -146,7 +151,7 @@ class Companion(object):
         '''
         creates an updated summary for question.
         '''
-        with shelve.open(str(cwd/'.contexts'), writeback=True) as hst:
+        with shelve.open(contexts, writeback=True) as hst:
             if profile not in hst: 
                 hst[profile] = {'history':{}}
                 return 'No history yet'

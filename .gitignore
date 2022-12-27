@@ -130,4 +130,4 @@ dmypy.json
 log/
 *db
 .history.*
-.contexts.*
+.contexts/

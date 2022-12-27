@@ -1,4 +1,11 @@
+
 # CHANGELOG
+
+- [0.1.0] 3:30 am Dec 27 2022
+  - Made .contexts db into folder
+  - Changed .gitignore to ignore all things in the .contexts folder
+  - Refactored companion.py to have simpler interface to contexts
+  - Used the similar refactor to make sure the logs directory is properly created and exists
 
 ## [Unreleased]
 
