@@ -15,7 +15,7 @@ cwd = cwd if cwd.name == 'chat_cli' else cwd.parent.parent
 contexts = cwd / ".contexts/contexts.dat"
 contexts.parent.mkdir(exist_ok=True)
 contexts = '.'.join(contexts.as_posix().split('.')[:-1])
-logs = cwd / "logs"
+logs = cwd / "log"
 logs.mkdir(exist_ok=True)
 class Companion(object):
     
@@ -94,7 +94,8 @@ class Companion(object):
         prompt = prompt or text('What do you want to ask?').execute()
         if in_file or kwargs:
             if in_file: kwargs['in_file'] = Path(in_file).read_text()
-            prompt = ''.join([f'{k}{kwargs[v]}' for k,v in [s.split('{') for s in prompt.split('}') if s]])
+            prompt = ''.join([f'{k}{kwargs[v]}' for k,v in [s.split('{')
+                                                            for s in prompt.split('}') if s]])
         
         logger.prompt(prompt)
         logger.response((response:=self.generate_response(
