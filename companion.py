@@ -19,29 +19,9 @@ class Companion(object):
                 'talk', 
                 'summarize', 
                 'review',
-                'make_history',
                 'resummarize'
                 ]
     
-    
-    def summarize(self, 
-                    prompt: ('Your propmt','positional')='',
-                    engine: ('The engine you use davinci|curie|ada','option','e',)='davinci',
-                    n: ('The number of generated','option')=1,
-                    temperature: ('1 for more random','option','t') = 0.5,
-                    t: ('1 for more random','option','type') = '',
-                  ) -> str:
-        '''
-        Summarizes input
-        '''
-        return self.generate_response(
-                              prompt=f'Summarize this {t} {prompt} concisely',
-                              engine=engine,
-                              max_tokens=3000,
-                              n=n,
-                              temperature=temperature,
-                          )
-         
     def generate_response(self,
             prompt: ('Your propmt','positional'),
             engine: ('The engine you use davinci|curie|ada','option','e',)='davinci',
@@ -71,6 +51,26 @@ class Companion(object):
             (Path()/filename).write_text(response)
         
         return response
+    
+    def summarize(self, 
+                    prompt: ('Your propmt','positional')='',
+                    engine: ('The engine you use davinci|curie|ada','option','e',)='davinci',
+                    n: ('The number of generated','option')=1,
+                    temperature: ('1 for more random','option','t') = 0.5,
+                    t: ('1 for more random','option','type') = '',
+                  ) -> str:
+        '''
+        Summarizes input
+        '''
+        return self.generate_response(
+                              prompt=f'Summarize this {t} {prompt} concisely',
+                              engine=engine,
+                              max_tokens=3000,
+                              n=n,
+                              temperature=temperature,
+                          )
+        
+        return response
         
     def talk(self,
             prompt: ('Your propmt','positional')='',
@@ -92,20 +92,20 @@ class Companion(object):
                               max_tokens=max_tokens,
                               n=n,
                               temperature=temperature,
+                              filename=filename
         )))
         logger.summary((summary := self.summarize(
-                                    prompt=f'I said "{prompt}". And you responded with "{response}"',
-                                    t='conversations',
+                                    prompt=f'you said to me "{prompt}". and I responded back to you with "{response}"',
+                                    t='conversations between you and me',
                                     engine=engine,
                                     n=n,
                                     temperature=temperature,
                         )))
        
-        with shelve.open(str(cwd/'.contexts')) as hst:
+        with shelve.open(str(cwd/'.contexts'), writeback=True) as hst:
             if profile not in hst: hst[profile] = {'history':{}}
-            hst[profile]['history'][prompt] = {'response':response,'summary':summary}
+            hst[profile]['history'] |= {prompt:{'response':response,'summary':summary}}
         
-        if filename:(Path()/filename).write_text(response)
         return response
    
     def review(self,
@@ -118,48 +118,45 @@ class Companion(object):
         use the `review` subcommand. This will bring up a list of previous questions.
         You can then select a question to view the response.
         '''
-        with shelve.open(str(cwd/'.contexts')) as hst:
+        with shelve.open(str(cwd/'.contexts'), writeback=True) as hst:
+            if profile not in hst: 
+                hst[profile] = {'history':{}}
+                return 'No history yet'
             prompt = fuzzy('What prompt do you want to review', 
-                            choices=list(hst['history'].keys()),
+                            choices=list(hst[profile]['history'].keys()),
                             vi_mode=True,
                             ).execute()
-        response = hst[profile]['history'][prompt]['summary' if summary else 'response']
+            response = hst[profile]['history'][prompt]['summary' if summary else 'response']
         if filename:(Path()/filename).write_text(response)
         return response
-         
-    def make_history(self,
-                     profile:('The profile to load in from contexts','option','p')='default',
-                     )->Dict[str,Dict[str,str]]:
-
-        '''
-        rebuilds history from log
-        '''
-
-        txt = [[l for l in t.split('\n') if l.strip() and l!='?'] 
-        for t in (cwd / 'log/companion_0.log').read_text().split('##########\n')]
-        txt = [t for t in txt if t]
-        response = [t[-1] for t in txt if 'RESPONSE' in t[0]]
-        prompts = [t[-1] for t in txt if 'PROMPT' in t[0]]
-        summary = [t[-1] for t in txt if 'SUMMARY' in t[0]]
-        conversations = {p:{'response':r, 'summary':s} for p,r,s in zip(prompts,response,summary)}
-        with shelve.open(str(cwd/'.contexts')) as hst:
-            hst[profile]['history'] = conversations
-        return conversations
 
     def resummarize(self,
                      profile:('The profile to load in from contexts','option','p')='default',
+                     n: ('The number of generated','option')=1,
+                     temperature: ('1 for more random','option','t') = 0.75,
                      )->Dict[str,Dict[str,str]]:
 
         '''
-        creates an updated summaries for questions.
+        creates an updated summary for question.
         '''
-        with shelve.open(str(cwd/'.contexts')) as hst:
-                hst[profile]['history'] |= {k:{j: (r:=u) if j == 'response' 
-                                                         else self.summarize(f'I said this {k}, and you responded with {r}') 
-                                            for j,u in v.items()} 
-                                            for k,v in hst[profile]['history'].items()}
-                conversations = hst[profile]['history']
-        return conversations
+        with shelve.open(str(cwd/'.contexts'), writeback=True) as hst:
+            if profile not in hst: 
+                hst[profile] = {'history':{}}
+                return 'No history yet'
+            logger.prompt((prompt:=fuzzy('What prompt do you want to review', 
+                            choices=list(hst[profile]['history'].keys()),
+                            vi_mode=True,
+                            ).execute()))
+            logger.response((response:=hst[profile]['history'][prompt]['response']))
+            logger.summary((summary := self.summarize(
+                                        prompt=f'you said to me "{prompt}". and I responded back to you with "{response}"',
+                                        t='conversations between you and me',
+                                        n=n,
+                                        temperature=temperature,
+                            )))
+            hst[profile]['history'][prompt]= {'response':response, 'summary':summary}
+            return summary
+            
        
 if __name__ == '__main__':
     Interpreter.call(Companion)   
