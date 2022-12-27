@@ -80,12 +80,18 @@ class Companion(object):
             temperature: ('1 for more random','option','t') = 0.5,
             filename:('The file name to output review for example scrach.py','option','f')='',
             profile:('The profile to load in from contexts','option','p')='default',
+            in_file:('File that is input to the prompt use {in_file} to reference it','option','In')='',
+            **kwargs,
             )->str:
         '''
         This allows you save your companion's responses, they are stored in context.db.
-        '''
+        ''' 
+        prompt = prompt or text('What do you want to ask?').execute()
+        if in_file or kwargs:
+            if in_file: kwargs['in_file'] = Path(in_file).read_text()
+            prompt = ''.join([f'{k}{kwargs[v]}' for k,v in [s.split('{') for s in prompt.split('}') if s]])
         
-        logger.prompt((prompt:=prompt or text('What do you want to ask?').execute()))
+        logger.prompt(prompt)
         logger.response((response:=self.generate_response(
                               prompt=prompt,
                               engine=engine,
@@ -94,6 +100,7 @@ class Companion(object):
                               temperature=temperature,
                               filename=filename
         )))
+        
         logger.summary((summary := self.summarize(
                                     prompt=f'you said to me "{prompt}". and I responded back to you with "{response}"',
                                     t='conversations between you and me',

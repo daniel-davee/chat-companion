@@ -13,6 +13,6 @@
   - [x] Delete make_history
   - [x] Refactor resummarize to take in a single prompt
 - [x] Implement functionality to add new profiles
-- [ ] Implement input giving an input into talk
-  - [ ] Add functionality that takes in an input file
-  - [ ] Add functionality that takes in a dictionary
+- [x] Implement input giving an input into talk
+  - [x] Add functionality that takes in an input file
+  - [x] Add functionality that takes in a dictionary
