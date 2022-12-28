@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 from plac import Interpreter
 from pathlib import Path
 from os import environ
@@ -34,7 +34,8 @@ class Companion(object):
             n: ('The number of generated','option')=1,
             temperature: ('1 for more random','option','t') = 0.5,
             filename:('The file name to output review for example scrach.py','option','f')='',
-            )->str:
+            _list:('If set will return all responses as a list','flag','l')=False,
+            )->str or List[str]:
         '''
         This Generates a response, it doesn't store it context.db.
         '''
@@ -48,9 +49,10 @@ class Companion(object):
                                         stop=None,
                                         temperature=temperature,
                                         )
-        response = select('Choose Response',
-                          choices={c.text for c in completions.choices} 
-                            ).execute() if n > 1 else completions.choices[0].text
+        choices = [c.text for c in completions.choices]
+        response = choices if _list else \
+                   select('Choose Response',choices=choices ).execute() if n > 1 \
+                   else completions.choices[0].text
         
         if filename:
             (Path()/filename).write_text(response)
@@ -94,8 +96,10 @@ class Companion(object):
         prompt = prompt or text('What do you want to ask?').execute()
         if in_file or kwargs:
             if in_file: kwargs['in_file'] = Path(in_file).read_text()
-            prompt = ''.join([f'{k}{kwargs[v]}' for k,v in [s.split('{')
-                                                            for s in prompt.split('}') if s]])
+            prompt = [s.split('{') for s in prompt.split('}') if s]
+            end =prompt[-1][0] if len(prompt[-1]) < 2 else ''
+            prompt = [s for s in prompt if len(s) ==2]
+            prompt = ''.join([f'{k}{kwargs[v]}' for k,v in prompt])+end
         
         logger.prompt(prompt)
         logger.response((response:=self.generate_response(

@@ -1,2 +1,2 @@
-* [ ] **BUG: input in the middle of prompt causes companion to crash**
+* [x] **BUG: input in the middle of prompt causes companion to crash**
     * When using the input feature, if the input happens in the middle of the prompt, companion will crash. This needs to be fixed urgently.
