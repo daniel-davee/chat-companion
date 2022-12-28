@@ -34,7 +34,7 @@ class Companion(object):
             n: ('The number of generated','option')=1,
             temperature: ('1 for more random','option','t') = 0.5,
             filename:('The file name to output review for example scrach.py','option','f')='',
-            _list:('If set will return all responses as a list','flag','l')=False,
+            bulk:('If set will return all responses as a list','flag','b')=False,
             )->str or List[str]:
         '''
         This Generates a response, it doesn't store it context.db.
@@ -50,7 +50,7 @@ class Companion(object):
                                         temperature=temperature,
                                         )
         choices = [c.text for c in completions.choices]
-        response = choices if _list else \
+        response = choices if bulk else \
                    select('Choose Response',choices=choices ).execute() if n > 1 \
                    else completions.choices[0].text
         
