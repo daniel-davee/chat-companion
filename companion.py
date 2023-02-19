@@ -24,8 +24,17 @@ class Companion(object):
                 'talk', 
                 'summarize', 
                 'review',
-                'resummarize'
+                'resummarize',
+                'translate',
                 ]
+    
+    def translate(self,
+                  prompt:('The prompt you want translated','positional'),
+                  language:(f'The language you want to translate to','option','l')='english',
+                  ):
+        prompt = prompt or text('What do you want to translate?').execute()
+        prompt = f"Translate this into {language} : '{prompt}'"
+        return self.generate_response(prompt) 
     
     def generate_response(self,
             prompt: ('Your propmt','positional'),
@@ -77,7 +86,6 @@ class Companion(object):
                               temperature=temperature,
                           )
         
-        return response
         
     def talk(self,
             prompt: ('Your propmt','positional')='',
