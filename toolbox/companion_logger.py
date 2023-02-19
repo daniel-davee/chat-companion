@@ -3,7 +3,8 @@ from pysimplelog import Logger
 
 logger = Logger('cli_companion')
 logger.set_log_file_basename('log/companion')
-logger.set_minimum_level(logger.logLevels['info'])
+logger.set_minimum_level(logger.logLevels['debug'])
+# logger.set_minimum_level(logger.logLevels['info'])
 logger.set_maximum_level(100,fileFlag=False)
 
 logger.add_log_type("prompt", name="PROMPT", 

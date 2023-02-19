@@ -4,6 +4,7 @@ from pathlib import Path
 from os import environ
 from InquirerPy.inquirer import text, fuzzy, select
 from toolbox.companion_logger import logger
+from toolbox.prompt_tools import clean_f_str
 import openai
 import shelve
 
@@ -26,22 +27,37 @@ class Companion(object):
                 'review',
                 'resummarize',
                 'translate',
+                'proof_read',
                 ]
+    
+    def proof_read(self,
+                   prompt:('The prompt you want to proof read','positional'),
+                   temperature: ('1 for more random','option','t') = 0.5,
+                   ):
+        prompt = clean_f_str(f'''
+                             Proof read this '{prompt or 
+                             text('What do you want to proof read?')
+                             .execute()}',
+                             and correct any spelling or grammar mistakes.
+                            ''')
+        return self.generate_response(prompt,temperature) 
     
     def translate(self,
                   prompt:('The prompt you want translated','positional'),
                   language:(f'The language you want to translate to','option','l')='english',
+                  temperature: ('1 for more random','option','t') = 0.5,
                   ):
-        prompt = prompt or text('What do you want to translate?').execute()
-        prompt = f"Translate this into {language} : '{prompt}'"
-        return self.generate_response(prompt) 
+        prompt = clean_f_str(f'''Translate this '{prompt or 
+                                 text('What do you want to translate?')
+                                 .execute()}' into {language}''')
+        return self.generate_response(prompt,temperature) 
     
     def generate_response(self,
             prompt: ('Your propmt','positional'),
+            temperature: ('1 for more random','option','t') = 0.5,
             engine: ('The engine you use davinci|curie|ada','option','e',)='davinci',
             max_tokens:('max tokens used in response','option','max')=1024,
             n: ('The number of generated','option')=1,
-            temperature: ('1 for more random','option','t') = 0.5,
             filename:('The file name to output review for example scrach.py','option','f')='',
             bulk:('If set will return all responses as a list','flag','b')=False,
             )->str or List[str]:
