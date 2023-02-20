@@ -131,4 +131,3 @@ log/
 *db
 .history.*
 .contexts/
-__init__.py
