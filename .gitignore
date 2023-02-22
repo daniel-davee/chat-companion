@@ -131,3 +131,4 @@ log/
 *db
 .history.*
 .contexts/
+.vscode/
