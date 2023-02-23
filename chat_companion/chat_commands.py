@@ -147,7 +147,6 @@ def talk(prompt:str = '',temperature:float = 0.5,
         prompt = [s for s in prompt if len(s) ==2]
         prompt = ''.join([f'{k}{kwargs[v]}' for k,v in prompt])+end
     
-    logger.debug(f'{prompt=}')
     logger.prompt(prompt)
     response=generate_response(
                   prompt=prompt,

@@ -4,17 +4,27 @@ CLI Companion is a command line tool that you can use to ask questions and get r
 
 ## Installation
 
-You can install CLI Companion using [PyInstaller](https://www.pyinstaller.org/).
+Using pip
 
-To install using PyInstaller, first clone this repository. Then, in the repository directory, run the following command:
+`pip install chat-companion`
 
-```
-pyinstaller -D companion.py
-```
+Using Poetry
 
-This will create a standalone executable in the `dist` directory.
+`poetry add chat-companion`
 
 ## Usage
+
+run 
+`companion --help` 
+
+To see the list of commands.
+
+```
+custom commands
+===============
+generate_response  proof_read   review     talk     
+help               resummarize  summarize  translate
+```
 
 ### Talk
 

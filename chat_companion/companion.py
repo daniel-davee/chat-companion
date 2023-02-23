@@ -1,6 +1,6 @@
 from typing import Dict, List
 from plac import Interpreter
-from chat_companion.commands import (
+from chat_companion.chat_commands import (
                                       generate_response,
                                       talk,
                                       summarize,
@@ -120,6 +120,9 @@ class Companion(object):
         Creates an updated summary for question.
         '''
         return resummarize(profile=profile,n=n,temperature=temperature)
+
+def main():
+    Interpreter.call(Companion)
        
 if __name__ == '__main__':
-    Interpreter.call(Companion)   
+    main()
