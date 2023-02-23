@@ -4,6 +4,19 @@ CLI Companion is a command line tool that you can use to ask questions and get r
 
 ## Installation
 
+First you need get an api key for chat-gpt.
+Then you create an environment variable named `$CHATKEY`
+
+bash
+```
+export CHATKEY=<your-key>
+```
+
+fish
+```
+set CHATKEY=<your-key>
+```
+
 Using pip
 
 `pip install chat-companion`
