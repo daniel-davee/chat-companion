@@ -1,7 +1,9 @@
-from typing import Dict, List
+from typing import Union
 from plac import Interpreter
 from chat_companion.chat_commands import (
                                       generate_response,
+                                      set_default_model,
+                                      show_default_model,
                                       talk,
                                       summarize,
                                       review,
@@ -30,6 +32,8 @@ class Companion(object):
     
     commands = [
                 'generate_response',
+                'set_default_model',
+                'show_default_model',
                 'talk', 
                 'summarize', 
                 'review',
@@ -37,6 +41,17 @@ class Companion(object):
                 'translate',
                 'proof_read',
                 ]
+    
+    def show_default_model(self):
+        return show_default_model()
+    
+    def set_default_model(self,
+                          value:('The new default value','positional')
+                          ):
+        '''
+        Sets the default model used.
+        '''
+        return set_default_model(value)
     
     def proof_read(self,
                    prompt:(prompt_doc,'positional'),
@@ -62,7 +77,7 @@ class Companion(object):
                           n: (n_doc,'option')=1,
                           filename:(filename_doc,'option','f')='',
                           bulk:(bulk_doc,'flag','b')=False,
-            )->str or List[str]:
+            )-> Union[str,list[str]]:
         '''
         This Generates a response, it doesn't store it context.db.
         '''
@@ -115,7 +130,7 @@ class Companion(object):
                     temperature: (temperature_doc,'option','t') = 0.5,
                     n: (n_doc,'option')=1,
                     profile:(profile_doc,'option','p')='default',
-                    )->Dict[str,Dict[str,str]]:
+                    )->dict[str,dict[str,str]]:
         '''
         Creates an updated summary for question.
         '''

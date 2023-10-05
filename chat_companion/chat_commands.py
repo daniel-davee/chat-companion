@@ -1,5 +1,6 @@
-from typing import Dict, List
+from typing import Union
 from pathlib import Path
+from json import loads,dumps
 from os import environ
 from InquirerPy.inquirer import text, fuzzy, select
 from toolbox.companion_logger import logger
@@ -16,6 +17,18 @@ contexts = '.'.join(contexts.as_posix().split('.')[:-1])
 
 logs = cwd / "log"
 logs.mkdir(exist_ok=True)
+
+def show_default_model():
+    settings_file:Path = cwd / 'settings.json'
+    models:str = loads(settings_file.read_text())['models']['default']
+    print(models)
+
+def set_default_model(value:str,key:str='default'):
+    settings_file:Path = cwd / 'settings.json'
+    print(f'Changing {key} to {value}')
+    settings:dict[str,str] = loads(settings_file.read_text())
+    settings['models'][key] = value
+    settings_file.write_text(dumps(settings))
 
 def proof_read(prompt:str,temperature:float = 0.5,) -> str:
     """
@@ -56,7 +69,7 @@ def translate(prompt:str,temperature:float = 0.5,language:str='english',) -> str
 def generate_response( prompt:str='', temperature:float = 0.5,
                       engine:str='davinci', max_tokens:int=1024,
                       n:int =1,filename:str='', bulk:bool=False,
-                      )->str or List[str]:
+                      )->Union[str,list[str]]:
     """
     This Generates a response, it doesn't store it context.db.
     
@@ -201,7 +214,7 @@ def review(filename:str='',profile:str='default',summary:bool=False,)->str:
 
 
 def resummarize(temperature:float = 0.5,n:int =1,profile:str='default',
-                )->Dict[str,Dict[str,str]]:
+                )->dict[str,dict[str,str]]:
     """
     Creates an updated summary for question.
 
