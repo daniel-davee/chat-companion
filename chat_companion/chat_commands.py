@@ -1,4 +1,3 @@
-from icecream import ic
 from typing import Union,Optional
 from pathlib import Path
 from json import loads,dumps
@@ -88,7 +87,6 @@ def generate_response( prompt:str='', temperature:float = 0.5,
      
     if 'CHATKEY' not in environ: raise Exception('Set CHATKEY')
     openai.api_key = environ['CHATKEY']
-    ic(openai.api_key)
     engine:str = engine or get_default_model()
     completions = openai.Completion.create(
                                     engine=engine,
