@@ -2,6 +2,7 @@ from typing import Union
 from plac import Interpreter
 from chat_companion.chat_commands import (
                                       generate_response,
+                                      get_key,
                                       set_default_model,
                                       get_default_model,
                                       talk,
@@ -34,6 +35,7 @@ class Companion(object):
                 'generate_response',
                 'set_default_model',
                 'show_default_model',
+                'show_key',
                 'talk', 
                 'summarize', 
                 'review',
@@ -41,6 +43,9 @@ class Companion(object):
                 'translate',
                 'proof_read',
                 ]
+    
+    def show_key(self):
+        print(get_key())
     
     def show_default_model(self):
         print(get_default_model())

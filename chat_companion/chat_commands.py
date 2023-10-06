@@ -65,6 +65,9 @@ def translate(prompt:str,temperature:float = 0.5,language:str='english',) -> str
                              .execute()}' into {language}''')
     return generate_response(prompt,temperature) 
 
+def get_key()->str:
+    if 'CHATKEY' not in environ: raise Exception('Set CHATKEY')
+    return environ['CHATKEY']
 def generate_response( prompt:str='', temperature:float = 0.5,
                       engine:Optional[str]=None, max_tokens:int=1024,
                       n:int =1,filename:str='', bulk:bool=False,
@@ -85,8 +88,7 @@ def generate_response( prompt:str='', temperature:float = 0.5,
         str or List[str]: the response or list of responses
     """
      
-    if 'CHATKEY' not in environ: raise Exception('Set CHATKEY')
-    openai.api_key = environ['CHATKEY']
+    openai.api_key = get_key()
     engine:str = engine or get_default_model()
     completions = openai.Completion.create(
                                     engine=engine,
