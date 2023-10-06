@@ -3,7 +3,7 @@ from plac import Interpreter
 from chat_companion.chat_commands import (
                                       generate_response,
                                       set_default_model,
-                                      show_default_model,
+                                      get_default_model,
                                       talk,
                                       summarize,
                                       review,
@@ -17,7 +17,7 @@ from toolbox.companion_logger import logger
 
 prompt_doc = 'The prompt you input'
 temperature_doc = '1 for more random'
-engine_doc = 'The engine you use davinci|curie|ada'
+engine_doc = f'The engine you use if none the default is {get_default_model()}'
 max_token_doc = 'max tokens used in response'
 n_doc = 'The number of responses generated'
 filename_doc = 'The file name to output review for example scratch.py'
@@ -43,7 +43,7 @@ class Companion(object):
                 ]
     
     def show_default_model(self):
-        return show_default_model()
+        print(get_default_model())
     
     def set_default_model(self,
                           value:('The new default value','positional')
@@ -72,7 +72,7 @@ class Companion(object):
     def generate_response(self,
                           prompt: (prompt_doc,'positional'),
                           temperature: (temperature_doc,'option','t') = 0.5,
-                          engine: (engine_doc,'option','e',)='davinci',
+                          engine: (engine_doc,'option','e',)=None,
                           max_tokens:(max_token_doc,'option','max')=1024,
                           n: (n_doc,'option')=1,
                           filename:(filename_doc,'option','f')='',
@@ -86,7 +86,7 @@ class Companion(object):
     def summarize(self, 
                   prompt: (prompt_doc,'positional'),
                   temperature: (temperature_doc,'option','t') = 0.5,
-                  engine: (engine_doc,'option','e',)='davinci',
+                  engine: (engine_doc,'option','e',)=None,
                   n: (n_doc,'option')=1,
                   t: ('The type of thing you are summarizing, e.g. a conversation','option','type') = '',
                   ) -> str:
@@ -99,7 +99,7 @@ class Companion(object):
     def talk(self,
              prompt: (prompt_doc,'positional') = '',
              temperature: (temperature_doc,'option','t') = 0.5,
-             engine: (engine_doc,'option','e',)='davinci',
+             engine: (engine_doc,'option','e',)=None,
              max_tokens:(max_token_doc,'option','max')=1024,
              n: (n_doc,'option')=1,
              filename:(filename_doc,'option','f')='',

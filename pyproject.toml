@@ -13,6 +13,8 @@ plac = "^1.3.5"
 inquirerpy = "^0.3.4"
 openai = "^0.26.5"
 pysimplelog = "^4.0.0"
+icecream = "^2.1.3"
+bardapi = "^0.1.38"
 
 [tool.poetry.group.dev.dependencies]
 behave = "^1.2.6"

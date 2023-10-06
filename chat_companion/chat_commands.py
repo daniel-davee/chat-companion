@@ -1,4 +1,5 @@
-from typing import Union
+from icecream import ic
+from typing import Union,Optional
 from pathlib import Path
 from json import loads,dumps
 from os import environ
@@ -18,10 +19,9 @@ contexts = '.'.join(contexts.as_posix().split('.')[:-1])
 logs = cwd / "log"
 logs.mkdir(exist_ok=True)
 
-def show_default_model():
+def get_default_model()->str:
     settings_file:Path = cwd / 'settings.json'
-    models:str = loads(settings_file.read_text())['models']['default']
-    print(models)
+    return loads(settings_file.read_text())['models']['default']
 
 def set_default_model(value:str,key:str='default'):
     settings_file:Path = cwd / 'settings.json'
@@ -67,7 +67,7 @@ def translate(prompt:str,temperature:float = 0.5,language:str='english',) -> str
     return generate_response(prompt,temperature) 
 
 def generate_response( prompt:str='', temperature:float = 0.5,
-                      engine:str='davinci', max_tokens:int=1024,
+                      engine:Optional[str]=None, max_tokens:int=1024,
                       n:int =1,filename:str='', bulk:bool=False,
                       )->Union[str,list[str]]:
     """
@@ -88,8 +88,10 @@ def generate_response( prompt:str='', temperature:float = 0.5,
      
     if 'CHATKEY' not in environ: raise Exception('Set CHATKEY')
     openai.api_key = environ['CHATKEY']
+    ic(openai.api_key)
+    engine:str = engine or get_default_model()
     completions = openai.Completion.create(
-                                    engine=f"text-{engine}-{'002' if engine == 'davinci' else '001'}",
+                                    engine=engine,
                                     prompt=prompt,
                                     max_tokens=max_tokens,
                                     n=n,
@@ -107,7 +109,7 @@ def generate_response( prompt:str='', temperature:float = 0.5,
     return response
 
 def summarize( prompt:str,temperature:float = 0.5,
-              engine:str='davinci', max_tokens:int=3000,
+              engine:Optional[str]=None, max_tokens:int=3000,
               n:int =1,filename:str='',bulk:bool=False,type_:str='',
               ) -> str:
     """
@@ -131,7 +133,7 @@ def summarize( prompt:str,temperature:float = 0.5,
     
     
 def talk(prompt:str = '',temperature:float = 0.5,
-         engine:str='davinci',max_tokens:int=1024,n:int =1,
+         engine:Optional[str]=None,max_tokens:int=1024,n:int =1,
          filename:str='',profile:str='default',in_file:str='',**kwargs,
         )->str:
     """
